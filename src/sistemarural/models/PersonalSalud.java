@@ -3,49 +3,44 @@ package sistemarural.models;
 /**
  * PersonalSalud
  * --------------
- * Representa a un trabajador de salud del establecimiento (enfermero/a,
- * técnico, médico). HEREDA de Persona los datos comunes y agrega el
- * cargo que desempeña y su número de colegiatura profesional.
+ * Refleja los datos de la tabla 'personal_medico': usuario, nombres y
+ * rol (además del id y el hash de contraseña, que se manejan aparte
+ * en AuthService por seguridad y nunca se guardan en este objeto).
  *
- * Junto con Paciente, demuestra el uso de HERENCIA (ambas extienden
- * Persona) y de POLIMORFISMO (cada una define obtenerRol() a su manera).
+ * Como 'personal_medico' no tiene columnas dni/apellidos/fecha_nacimiento,
+ * esos campos heredados de Persona quedan vacíos para este tipo: es una
+ * decisión de diseño consciente, no un error.
  */
 public class PersonalSalud extends Persona {
 
-    private String cargo;               // ej. "Licenciada en Enfermería"
-    private String numeroColegiatura;
+    private String usuario;
+    private String rol; // ej. "Licenciada en Enfermería", "Médico General"
 
-    public PersonalSalud(String dni, String nombres, String apellidos,
-                          String fechaNacimiento, String telefono,
-                          String cargo, String numeroColegiatura) {
-        super(dni, nombres, apellidos, fechaNacimiento, telefono);
-        this.cargo = cargo;
-        this.numeroColegiatura = numeroColegiatura;
+    public PersonalSalud(String usuario, String nombres, String rol) {
+        super("", nombres, "", "");
+        this.usuario = usuario;
+        this.rol = rol;
     }
 
-    public String getCargo() {
-        return cargo;
+    public String getUsuario() {
+        return usuario;
     }
 
-    public void setCargo(String cargo) {
-        this.cargo = cargo;
-    }
-
-    public String getNumeroColegiatura() {
-        return numeroColegiatura;
+    public String getRol() {
+        return rol;
     }
 
     /**
-     * POLIMORFISMO: implementación específica del rol para el personal
-     * de salud; a diferencia de Paciente, aquí el "rol" es su cargo real.
+     * POLIMORFISMO: a diferencia de Paciente, aquí el "rol" es el cargo
+     * real que cumple la persona en el establecimiento.
      */
     @Override
     public String obtenerRol() {
-        return cargo;
+        return rol;
     }
 
     @Override
     public String getInformacion() {
-        return super.getInformacion() + " | Colegiatura: " + numeroColegiatura;
+        return super.getInformacion() + " (usuario: " + usuario + ")";
     }
 }
