@@ -3,33 +3,15 @@ package sistemarural.models;
 /**
  * Paciente
  * --------
- * Representa a un paciente del Centro de Salud Rural. HEREDA de Persona
- * los datos comunes y agrega su propia información: el tipo de seguro de
- * salud (dato relevante en el contexto rural peruano: SIS, EsSalud,
- * particular) y el identificador de su historia clínica.
+ * Refleja EXACTAMENTE las columnas de la tabla 'pacientes':
+ * dni, nombres, apellidos, fecha_nacimiento. No se agregan campos que
+ * no existan en la base de datos real, para que lo que ves en el
+ * objeto sea siempre lo que hay en la fila.
  */
 public class Paciente extends Persona {
 
-    private String tipoSeguro;      // ej. "SIS", "EsSalud", "Particular"
-    private String idHistoriaClinica;
-
-    public Paciente(String dni, String nombres, String apellidos,
-                     String fechaNacimiento, String telefono, String tipoSeguro) {
-        super(dni, nombres, apellidos, fechaNacimiento, telefono);
-        this.tipoSeguro = tipoSeguro;
-        this.idHistoriaClinica = "HC-" + dni;
-    }
-
-    public String getTipoSeguro() {
-        return tipoSeguro;
-    }
-
-    public void setTipoSeguro(String tipoSeguro) {
-        this.tipoSeguro = tipoSeguro;
-    }
-
-    public String getIdHistoriaClinica() {
-        return idHistoriaClinica;
+    public Paciente(String dni, String nombres, String apellidos, String fechaNacimiento) {
+        super(dni, nombres, apellidos, fechaNacimiento);
     }
 
     /**
@@ -38,10 +20,5 @@ public class Paciente extends Persona {
     @Override
     public String obtenerRol() {
         return "Paciente";
-    }
-
-    @Override
-    public String getInformacion() {
-        return super.getInformacion() + " | Seguro: " + tipoSeguro;
     }
 }

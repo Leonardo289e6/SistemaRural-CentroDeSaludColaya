@@ -1,5 +1,8 @@
 package sistemarural;
 
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
 import sistemarural.config.CloudDbConnection;
 import sistemarural.controllers.AuthController;
 import sistemarural.controllers.HistorialController;
@@ -12,10 +15,6 @@ import sistemarural.repositories.PacienteRepositoryJdbc;
 import sistemarural.repositories.PersonalMedicoRepositoryJdbc;
 import sistemarural.services.AuthService;
 import sistemarural.services.HistorialService;
-
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * Main
@@ -75,7 +74,7 @@ public class Main {
             return;
         }
 
-        // ---------- MENÚ (solo alcanzable con sesión activa) ----------
+        // ---------- MENÚ (solo alcanzable con sesión/login activa) ----------
         boolean salir = false;
         while (!salir) {
             System.out.println("\n--- Menú | Sesión: " + authController.getSesionActual().getInformacion() + " ---");

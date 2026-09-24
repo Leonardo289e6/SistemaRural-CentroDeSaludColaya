@@ -3,18 +3,15 @@ package sistemarural.models;
 /**
  * Persona (clase abstracta)
  * --------------------------
- * Superclase del dominio que agrupa los atributos comunes a cualquier
- * persona registrada en el sistema del Centro de Salud Rural: tanto
- * pacientes como personal de salud comparten estos datos.
+ * Superclase del dominio con los datos que SÍ existen en la tabla
+ * 'pacientes' de la base de datos real: dni, nombres, apellidos y
+ * fecha de nacimiento.
  *
- * Aplica HERENCIA: Paciente y PersonalSalud extienden esta clase.
- * Aplica POLIMORFISMO: el método obtenerRol() se declara abstracto aquí
- * y cada subclase lo implementa a su manera; getInformacion() lo invoca
- * sin saber en tiempo de compilación qué subtipo concreto es.
- *
- * Los atributos son "protected" (no privados) porque las subclases los
- * necesitan directamente, pero siguen sin ser accesibles desde fuera del
- * paquete models sin pasar por los getters/setters (encapsulamiento).
+ * Nota de diseño: la tabla 'personal_medico' no guarda dni, apellidos
+ * ni fecha de nacimiento (solo usuario, nombres y rol), así que los
+ * objetos PersonalSalud construidos desde el login dejan esos campos
+ * vacíos. Se mantiene la herencia porque ambos tipos SÍ comparten
+ * "nombres" y el comportamiento polimórfico de obtenerRol().
  */
 public abstract class Persona {
 
@@ -22,20 +19,17 @@ public abstract class Persona {
     protected String nombres;
     protected String apellidos;
     protected String fechaNacimiento; // formato: yyyy-MM-dd
-    protected String telefono;
 
-    protected Persona(String dni, String nombres, String apellidos,
-                       String fechaNacimiento, String telefono) {
+    protected Persona(String dni, String nombres, String apellidos, String fechaNacimiento) {
         this.dni = dni;
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.fechaNacimiento = fechaNacimiento;
-        this.telefono = telefono;
     }
 
     /**
-     * Método abstracto: cada subclase (Paciente, PersonalSalud) define
-     * cuál es su rol dentro del sistema. Es la base del polimorfismo.
+     * Método abstracto: cada subclase define su rol. Es la base del
+     * polimorfismo (Persona no sabe qué tipo concreto la implementa).
      */
     public abstract String obtenerRol();
 
@@ -43,53 +37,31 @@ public abstract class Persona {
         return dni;
     }
 
-    public void setDni(String dni) {
-        this.dni = dni;
-    }
-
     public String getNombres() {
         return nombres;
-    }
-
-    public void setNombres(String nombres) {
-        this.nombres = nombres;
     }
 
     public String getApellidos() {
         return apellidos;
     }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
-
     public String getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(String fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
     public String getNombreCompleto() {
+        if (apellidos == null || apellidos.isBlank()) {
+            return nombres;
+        }
         return nombres + " " + apellidos;
     }
 
     /**
-     * Ejemplo de POLIMORFISMO en uso: este método es el mismo para toda
-     * Persona, pero el texto que produce cambia según la subclase real
-     * del objeto, porque obtenerRol() se resuelve en tiempo de ejecución.
+     * POLIMORFISMO en uso: el texto cambia según la subclase real del
+     * objeto, porque obtenerRol() se resuelve en tiempo de ejecución.
      */
     public String getInformacion() {
-        return String.format("[%s] %s (DNI: %s)", obtenerRol(), getNombreCompleto(), dni);
+        return String.format("[%s] %s", obtenerRol(), getNombreCompleto());
     }
 
     @Override
