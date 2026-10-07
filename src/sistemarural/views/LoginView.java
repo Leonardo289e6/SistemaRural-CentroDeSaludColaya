@@ -2,6 +2,7 @@ package sistemarural.views;
 
 import java.awt.*;
 import javax.swing.*;
+import sistemarural.controllers.AuthController;
 
 public class LoginView extends JFrame {
 
@@ -9,11 +10,32 @@ public class LoginView extends JFrame {
     private final JPasswordField txtPassword = new JPasswordField(18);
     private final JLabel lblEstado = new JLabel(" ", SwingConstants.CENTER);
     private final JButton btnIngresar = new JButton("Ingresar");
+    private final AuthController authController;
+    private final Runnable alIngresar;
 
-    public LoginView() {
+    public LoginView(AuthController authController, Runnable alIngresar) {
         super("SistemaRural-PE | Ingreso");
+        this.authController = authController;
+        this.alIngresar = alIngresar;
         construirUI();
     }
+
+    private void intentarLogin() {
+        String usuario = txtUsuario.getText().trim();
+        String password = new String(txtPassword.getPassword()).trim();
+
+        String resultado = authController.iniciarSesion(usuario, password);
+
+        if (authController.haySesionActiva()) {
+            dispose();
+            alIngresar.run();
+            return;
+        }
+
+        txtPassword.setText("");
+        lblEstado.setText(resultado);
+    }
+
 
     private void construirUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,6 +73,7 @@ public class LoginView extends JFrame {
         setContentPane(root);
         getRootPane().setDefaultButton(btnIngresar); // Enter = ingresar
 
+        btnIngresar.addActionListener(e -> intentarLogin());
         pack();
         setLocationRelativeTo(null);
     }
