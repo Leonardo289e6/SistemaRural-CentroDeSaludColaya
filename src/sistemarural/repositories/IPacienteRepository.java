@@ -1,10 +1,10 @@
 package sistemarural.repositories;
 
+import java.util.List;
 import sistemarural.exceptions.ErrorPersistenciaException;
+import sistemarural.exceptions.PacienteDuplicadoException;
 import sistemarural.exceptions.PersonaNoEncontradaException;
 import sistemarural.models.Paciente;
-
-import java.util.List;
 
 /**
  * IPacienteRepository
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface IPacienteRepository {
 
-    void guardar(Paciente paciente) throws ErrorPersistenciaException;
+    void guardar(Paciente paciente) throws ErrorPersistenciaException, PacienteDuplicadoException;
 
     Paciente buscarPorDni(String dni) throws ErrorPersistenciaException, PersonaNoEncontradaException;
 
