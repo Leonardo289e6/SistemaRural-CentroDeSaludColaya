@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import sistemarural.exceptions.DatoInvalidoException;
 import sistemarural.exceptions.ErrorPersistenciaException;
+import sistemarural.exceptions.PacienteDuplicadoException;
 import sistemarural.exceptions.PersonaNoEncontradaException;
 import sistemarural.models.Atencion;
 import sistemarural.models.Paciente;
@@ -30,6 +31,8 @@ public class HistorialController {
             return "Paciente guardado en la base de datos: " + paciente.getNombreCompleto();
         } catch (DatoInvalidoException e) {
             return "Error de validación: " + e.getMessage();
+        } catch (PacienteDuplicadoException e) {
+            return "Aviso: " + e.getMessage();
         } catch (ErrorPersistenciaException e) {
             return "Error de base de datos: " + e.getMessage();
         }
