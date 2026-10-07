@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import sistemarural.exceptions.DatoInvalidoException;
 import sistemarural.exceptions.ErrorPersistenciaException;
+import sistemarural.exceptions.PacienteDuplicadoException;
 import sistemarural.exceptions.PersonaNoEncontradaException;
 import sistemarural.models.Atencion;
 import sistemarural.models.Paciente;
@@ -28,11 +29,19 @@ public class HistorialService {
     }
 
     public void registrarNuevoPaciente(Paciente paciente)
-            throws DatoInvalidoException, ErrorPersistenciaException {
+            throws DatoInvalidoException, ErrorPersistenciaException, PacienteDuplicadoException {
         ValidadorDatos.validarDni(paciente.getDni());
         ValidadorDatos.validarTextoNoVacio(paciente.getNombres(), "nombres");
         ValidadorDatos.validarTextoNoVacio(paciente.getApellidos(), "apellidos");
         ValidadorDatos.validarFecha(paciente.getFechaNacimiento(), "fecha de nacimiento");
+        // Verificación previa (mensaje claro); el repositorio además protege
+        // contra duplicados concurrentes con la restricción UNIQUE de la BD.
+        try {
+            pacienteRepository.buscarPorDni(paciente.getDni());
+            throw new PacienteDuplicadoException(paciente.getDni());
+        } catch (PersonaNoEncontradaException e) {
+            // No existe: se puede registrar.
+        }
         pacienteRepository.guardar(paciente);
     }
 
