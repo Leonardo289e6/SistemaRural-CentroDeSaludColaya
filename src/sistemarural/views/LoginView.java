@@ -12,11 +12,15 @@ public class LoginView extends JFrame {
     private final JButton btnIngresar = new JButton("Ingresar");
     private final AuthController authController;
     private final Runnable alIngresar;
+    private static final int INTENTOS_MAXIMOS_LOGIN = 3;
+    private int intentos = 0;
+    private final Runnable alAgotarIntentos;
 
-    public LoginView(AuthController authController, Runnable alIngresar) {
+    public LoginView(AuthController authController, Runnable alIngresar,Runnable alAgotarIntentos) {
         super("SistemaRural-PE | Ingreso");
         this.authController = authController;
         this.alIngresar = alIngresar;
+        this.alAgotarIntentos = alAgotarIntentos;
         construirUI();
     }
 
@@ -24,6 +28,7 @@ public class LoginView extends JFrame {
         String usuario = txtUsuario.getText().trim();
         String password = new String(txtPassword.getPassword()).trim();
 
+        intentos++;
         String resultado = authController.iniciarSesion(usuario, password);
 
         if (authController.haySesionActiva()) {
@@ -33,8 +38,19 @@ public class LoginView extends JFrame {
         }
 
         txtPassword.setText("");
-        lblEstado.setText(resultado);
+        if (intentos >= INTENTOS_MAXIMOS_LOGIN) {
+            JOptionPane.showMessageDialog(this,
+                    "Número máximo de intentos alcanzado. Se cerrará el programa.",
+                    "Acceso denegado", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            alAgotarIntentos.run();
+        } else {
+            lblEstado.setText("<html><div style='text-align:center'>" + resultado
+                    + " (intento " + intentos + "/" + INTENTOS_MAXIMOS_LOGIN + ")</div></html>");
+            pack();
+        }
     }
+
 
 
     private void construirUI() {
