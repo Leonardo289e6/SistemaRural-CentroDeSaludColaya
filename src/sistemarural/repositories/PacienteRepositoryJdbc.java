@@ -1,10 +1,5 @@
 package sistemarural.repositories;
 
-import sistemarural.config.CloudDbConnection;
-import sistemarural.exceptions.ErrorPersistenciaException;
-import sistemarural.exceptions.PersonaNoEncontradaException;
-import sistemarural.models.Paciente;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -12,11 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import sistemarural.config.CloudDbConnection;
+import sistemarural.exceptions.ErrorPersistenciaException;
+import sistemarural.exceptions.PacienteDuplicadoException;
+import sistemarural.exceptions.PersonaNoEncontradaException;
+import sistemarural.models.Paciente;
 
 /**
  * PacienteRepositoryJdbc
  * ------------------------
- * Implementación REAL (no simulada) de IPacienteRepository: ejecuta
+ * Implementación: ejecuta
  * sentencias SQL contra la tabla 'pacientes' usando JDBC y la conexión
  * Singleton de CloudDbConnection. Usa PreparedStatement en todos los
  * casos para evitar inyección SQL.
@@ -30,12 +30,10 @@ public class PacienteRepositoryJdbc implements IPacienteRepository {
     }
 
     @Override
-    public void guardar(Paciente paciente) throws ErrorPersistenciaException {
+    public void guardar(Paciente paciente) throws ErrorPersistenciaException, PacienteDuplicadoException {
+        // INSERT simple: si el DNI ya existe, la BD rechaza la fila (no se sobrescribe).
         String sql = "INSERT INTO pacientes (dni, nombres, apellidos, fecha_nacimiento) "
-                + "VALUES (?, ?, ?, ?) "
-                + "ON CONFLICT (dni) DO UPDATE SET "
-                + "nombres = EXCLUDED.nombres, apellidos = EXCLUDED.apellidos, "
-                + "fecha_nacimiento = EXCLUDED.fecha_nacimiento";
+                + "VALUES (?, ?, ?, ?)";
         try {
             Connection conexion = cloudDbConnection.obtenerConexion();
             try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
@@ -46,6 +44,9 @@ public class PacienteRepositoryJdbc implements IPacienteRepository {
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
+            if ("23505".equals(e.getSQLState())) { // unique_violation (PostgreSQL)
+                throw new PacienteDuplicadoException(paciente.getDni());
+            }
             throw new ErrorPersistenciaException(
                     "No se pudo guardar el paciente en la base de datos: " + e.getMessage(), e);
         }
