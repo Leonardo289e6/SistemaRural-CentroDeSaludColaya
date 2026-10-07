@@ -37,7 +37,7 @@ public class DashboardView extends JFrame {
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Registrar paciente", panelRegistrarPaciente());
         tabs.addTab("Buscar paciente", panelBuscarPaciente());
-        tabs.addTab("Registrar atención", new JPanel());
+        tabs.addTab("Registrar atención", panelRegistrarAtencion());
         tabs.addTab("Historia clínica", new JPanel());
         root.add(tabs, BorderLayout.CENTER);
 
@@ -73,6 +73,26 @@ public class DashboardView extends JFrame {
         btn.addActionListener(e -> salida.setText(historial.buscarPacientePorDni(dni.getText().trim())));
         return consulta("DNI a buscar:", dni, btn, salida);
     }
+        // ---------- 3. Registrar atención médica ----------
+    private JPanel panelRegistrarAtencion() {
+        JTextField dni = new JTextField(20);
+        JTextField fecha = new JTextField(20);
+        JTextField diagnostico = new JTextField(20);
+        JTextField tratamiento = new JTextField(20);
+        JButton btn = new JButton("Registrar atención");
+
+        btn.addActionListener(e -> {
+            String r = historial.registrarAtencion(dni.getText().trim(), fecha.getText().trim(),
+                    diagnostico.getText().trim(), tratamiento.getText().trim());
+            mostrar(r);
+            fecha.setText(""); diagnostico.setText(""); tratamiento.setText("");
+        });
+
+        return formulario(btn,
+                "DNI del paciente:", dni, "Fecha de atención (yyyy-MM-dd):", fecha,
+                "Diagnóstico:", diagnostico, "Tratamiento:", tratamiento);
+    }
+
 
 
     // ---------- Utilidades de UI ----------
