@@ -6,6 +6,9 @@ import sistemarural.controllers.AuthController;
 import sistemarural.controllers.HistorialController;
 import sistemarural.models.Paciente;
 import java.util.List;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 
 public class DashboardView extends JFrame {
 
@@ -22,7 +25,11 @@ public class DashboardView extends JFrame {
     }
 
     private void construirUI() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override public void windowClosing(WindowEvent e) { salir(); }
+        });
+
 
         JPanel root = new JPanel(new BorderLayout(0, 10));
         root.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15));
@@ -31,7 +38,7 @@ public class DashboardView extends JFrame {
         JPanel cabecera = new JPanel(new BorderLayout());
         cabecera.add(new JLabel("Sesión: " + auth.getSesionActual().getInformacion()), BorderLayout.WEST);
         JButton btnSalir = new JButton("Salir");
-        btnSalir.addActionListener(e -> { dispose(); alSalir.run(); });
+        btnSalir.addActionListener(e -> salir());
         cabecera.add(btnSalir, BorderLayout.EAST);
         root.add(cabecera, BorderLayout.NORTH);
 
@@ -110,6 +117,15 @@ public class DashboardView extends JFrame {
         });
         return consulta("DNI del paciente:", dni, btn, salida);
     }
+        private void salir() {
+        int r = JOptionPane.showConfirmDialog(this, "¿Deseas cerrar la sesión y salir?",
+                "Salir", JOptionPane.YES_NO_OPTION);
+        if (r == JOptionPane.YES_OPTION) {
+            dispose();
+            alSalir.run();
+        }
+    }
+
 
 
 
