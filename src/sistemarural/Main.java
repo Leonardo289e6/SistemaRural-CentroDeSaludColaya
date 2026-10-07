@@ -16,6 +16,7 @@ import sistemarural.services.AuthService;
 import sistemarural.services.HistorialService;
 import sistemarural.views.DashboardView;
 import sistemarural.views.LoginView;
+import javax.swing.UIManager;
 
 /**
  * Main (versión gráfica). Conecta a la BD, arma las dependencias y abre
@@ -24,6 +25,10 @@ import sistemarural.views.LoginView;
 public class Main {
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignorada) { }
+
         CloudDbConnection cloudDbConnection = CloudDbConnection.obtenerInstancia();
         try {
             cloudDbConnection.obtenerConexion(); // Falla rápido si las credenciales están mal

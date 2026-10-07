@@ -168,6 +168,7 @@ public class DashboardView extends JFrame {
         top.add(new JLabel(etiqueta));
         top.add(campo);
         top.add(boton);
+        campo.addActionListener(e -> boton.doClick()); // Enter = buscar
 
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
