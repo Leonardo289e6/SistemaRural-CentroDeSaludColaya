@@ -5,6 +5,7 @@ import javax.swing.*;
 import sistemarural.controllers.AuthController;
 import sistemarural.controllers.HistorialController;
 import sistemarural.models.Paciente;
+import java.util.List;
 
 public class DashboardView extends JFrame {
 
@@ -38,7 +39,7 @@ public class DashboardView extends JFrame {
         tabs.addTab("Registrar paciente", panelRegistrarPaciente());
         tabs.addTab("Buscar paciente", panelBuscarPaciente());
         tabs.addTab("Registrar atención", panelRegistrarAtencion());
-        tabs.addTab("Historia clínica", new JPanel());
+        tabs.addTab("Historia clínica", panelHistoriaClinica());
         root.add(tabs, BorderLayout.CENTER);
 
         setContentPane(root);
@@ -92,6 +93,24 @@ public class DashboardView extends JFrame {
                 "DNI del paciente:", dni, "Fecha de atención (yyyy-MM-dd):", fecha,
                 "Diagnóstico:", diagnostico, "Tratamiento:", tratamiento);
     }
+    // ---------- 4. Ver historia clínica ----------
+    private JPanel panelHistoriaClinica() {
+        JTextField dni = new JTextField(12);
+        JTextArea salida = areaSalida();
+        JButton btn = new JButton("Ver historia");
+        btn.addActionListener(e -> {
+            List<String> historia = historial.verHistoriaClinica(dni.getText().trim());
+            if (historia.isEmpty()) {
+                salida.setText("No hay atenciones registradas para este paciente.");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                historia.forEach(linea -> sb.append("  - ").append(linea).append("\n"));
+                salida.setText(sb.toString());
+            }
+        });
+        return consulta("DNI del paciente:", dni, btn, salida);
+    }
+
 
 
 
