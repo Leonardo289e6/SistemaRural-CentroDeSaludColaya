@@ -36,7 +36,7 @@ public class DashboardView extends JFrame {
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Registrar paciente", panelRegistrarPaciente());
-        tabs.addTab("Buscar paciente", new JPanel());
+        tabs.addTab("Buscar paciente", panelBuscarPaciente());
         tabs.addTab("Registrar atención", new JPanel());
         tabs.addTab("Historia clínica", new JPanel());
         root.add(tabs, BorderLayout.CENTER);
@@ -65,8 +65,18 @@ public class DashboardView extends JFrame {
                 "DNI (8 dígitos):", dni, "Nombres:", nombres,
                 "Apellidos:", apellidos, "Fecha de nacimiento (yyyy-MM-dd):", nacimiento);
     }
+        // ---------- 2. Buscar paciente por DNI ----------
+    private JPanel panelBuscarPaciente() {
+        JTextField dni = new JTextField(12);
+        JTextArea salida = areaSalida();
+        JButton btn = new JButton("Buscar");
+        btn.addActionListener(e -> salida.setText(historial.buscarPacientePorDni(dni.getText().trim())));
+        return consulta("DNI a buscar:", dni, btn, salida);
+    }
+
 
     // ---------- Utilidades de UI ----------
+
     /** Formulario genérico: pares (etiqueta, campo) + botón. */
     private JPanel formulario(JButton boton, Object... elementos) {
         JPanel form = new JPanel(new GridBagLayout());
@@ -95,6 +105,31 @@ public class DashboardView extends JFrame {
 
     private void mostrar(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Resultado", JOptionPane.INFORMATION_MESSAGE);
+    
     }
+    /** Panel de consulta: campo + botón arriba, resultado abajo. */
+    private JPanel consulta(String etiqueta, JTextField campo, JButton boton, JTextArea salida) {
+        JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
+        top.add(new JLabel(etiqueta));
+        top.add(campo);
+        top.add(boton);
+
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        p.add(top, BorderLayout.NORTH);
+        p.add(new JScrollPane(salida), BorderLayout.CENTER);
+        return p;
+    }
+
+    private JTextArea areaSalida() {
+        JTextArea a = new JTextArea();
+        a.setEditable(false);
+        a.setLineWrap(true);
+        a.setWrapStyleWord(true);
+        a.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        return a;
+    }
+
+   
 }
 
