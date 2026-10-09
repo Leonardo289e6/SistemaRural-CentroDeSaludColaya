@@ -3,6 +3,7 @@ package sistemarural;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import sistemarural.config.CloudDbConnection;
 import sistemarural.controllers.AuthController;
 import sistemarural.controllers.HistorialController;
@@ -16,7 +17,6 @@ import sistemarural.services.AuthService;
 import sistemarural.services.HistorialService;
 import sistemarural.views.DashboardView;
 import sistemarural.views.LoginView;
-import javax.swing.UIManager;
 
 /**
  * Main (versión gráfica). Conecta a la BD, arma las dependencias y abre
@@ -32,7 +32,7 @@ public class Main {
         CloudDbConnection cloudDbConnection = CloudDbConnection.obtenerInstancia();
         try {
             cloudDbConnection.obtenerConexion(); // Falla rápido si las credenciales están mal
-        } catch (SQLException e) {
+        } catch (SQLException | IllegalStateException e) {
             JOptionPane.showMessageDialog(null,
                     "No se pudo conectar a la base de datos: " + e.getMessage()
                     + "\nRevisa las variables de entorno DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD.",

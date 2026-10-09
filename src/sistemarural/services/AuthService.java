@@ -37,6 +37,6 @@ public class AuthService {
             throw new CredencialesInvalidasException();
         }
 
-        return new PersonalSalud(registro.usuario(), registro.nombres(), registro.rol());
+        return new PersonalSalud(registro.id(), registro.usuario(), registro.nombres(), registro.rol());
     }
 }

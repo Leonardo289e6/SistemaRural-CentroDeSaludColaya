@@ -4,8 +4,8 @@ package sistemarural.models;
  * PersonalSalud
  * --------------
  * Refleja los datos de la tabla 'personal_medico': usuario, nombres y
- * rol (además del id y el hash de contraseña, que se manejan aparte
- * en AuthService por seguridad y nunca se guardan en este objeto).
+ * rol, más el id (necesario para registrar quién atendió). El hash de la
+ * contraseña se maneja aparte en AuthService y nunca se guarda en este objeto).
  *
  * Como 'personal_medico' no tiene columnas dni/apellidos/fecha_nacimiento,
  * esos campos heredados de Persona quedan vacíos para este tipo: es una
@@ -13,13 +13,19 @@ package sistemarural.models;
  */
 public class PersonalSalud extends Persona {
 
+    private long id; // id en la tabla personal_medico (se guarda en historias_clinicas.atendido_por)
     private String usuario;
     private String rol; // ej. "Licenciada en Enfermería", "Médico General"
 
-    public PersonalSalud(String usuario, String nombres, String rol) {
+    public PersonalSalud(long id, String usuario, String nombres, String rol) {
         super("", nombres, "", "");
+        this.id = id;
         this.usuario = usuario;
         this.rol = rol;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getUsuario() {

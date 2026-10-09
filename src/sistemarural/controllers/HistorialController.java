@@ -50,9 +50,10 @@ public class HistorialController {
         }
     }
 
-    public String registrarAtencion(String dniPaciente, String fecha, String diagnostico, String tratamiento) {
+    public String registrarAtencion(String dniPaciente, String fecha, String diagnostico, String tratamiento,
+                                    Long atendidoPorId) {
         try {
-            historialService.registrarAtencion(dniPaciente, fecha, diagnostico, tratamiento);
+            historialService.registrarAtencion(dniPaciente, fecha, diagnostico, tratamiento, atendidoPorId);
             return "Atención registrada correctamente para el paciente " + dniPaciente;
         } catch (DatoInvalidoException e) {
             return "Error de validación: " + e.getMessage();

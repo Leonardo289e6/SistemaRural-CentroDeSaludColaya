@@ -1,15 +1,22 @@
 package sistemarural.views;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
 import javax.swing.*;
 import sistemarural.controllers.AuthController;
 import sistemarural.controllers.HistorialController;
 import sistemarural.models.Paciente;
-import java.util.List;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
-
+/**
+ * DashboardView
+ * -------------
+ * Panel principal (solo se abre con sesión activa). Cada pestaña equivale
+ * a una opción del menú de consola:
+ *   1. Registrar paciente   2. Buscar por DNI
+ *   3. Registrar atención   4. Ver historia clínica
+ */
 public class DashboardView extends JFrame {
 
     private final HistorialController historial;
@@ -25,11 +32,10 @@ public class DashboardView extends JFrame {
     }
 
     private void construirUI() {
-                setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) { salir(); }
         });
-
 
         JPanel root = new JPanel(new BorderLayout(0, 10));
         root.setBorder(BorderFactory.createEmptyBorder(10, 15, 15, 15));
@@ -52,8 +58,9 @@ public class DashboardView extends JFrame {
         setContentPane(root);
         setSize(720, 480);
         setLocationRelativeTo(null);
-    } 
-        // ---------- 1. Registrar paciente ----------
+    }
+
+    // ---------- 1. Registrar paciente ----------
     private JPanel panelRegistrarPaciente() {
         JTextField dni = new JTextField(20);
         JTextField nombres = new JTextField(20);
@@ -66,14 +73,17 @@ public class DashboardView extends JFrame {
                     dni.getText().trim(), nombres.getText().trim(),
                     apellidos.getText().trim(), nacimiento.getText().trim()));
             mostrar(r);
-            dni.setText(""); nombres.setText(""); apellidos.setText(""); nacimiento.setText("");
+            if (r.startsWith("Paciente guardado")) { // solo limpia si se registró
+                dni.setText(""); nombres.setText(""); apellidos.setText(""); nacimiento.setText("");
+            }
         });
 
         return formulario(btn,
                 "DNI (8 dígitos):", dni, "Nombres:", nombres,
                 "Apellidos:", apellidos, "Fecha de nacimiento (yyyy-MM-dd):", nacimiento);
     }
-        // ---------- 2. Buscar paciente por DNI ----------
+
+    // ---------- 2. Buscar paciente por DNI ----------
     private JPanel panelBuscarPaciente() {
         JTextField dni = new JTextField(12);
         JTextArea salida = areaSalida();
@@ -81,7 +91,8 @@ public class DashboardView extends JFrame {
         btn.addActionListener(e -> salida.setText(historial.buscarPacientePorDni(dni.getText().trim())));
         return consulta("DNI a buscar:", dni, btn, salida);
     }
-        // ---------- 3. Registrar atención médica ----------
+
+    // ---------- 3. Registrar atención médica ----------
     private JPanel panelRegistrarAtencion() {
         JTextField dni = new JTextField(20);
         JTextField fecha = new JTextField(20);
@@ -91,7 +102,8 @@ public class DashboardView extends JFrame {
 
         btn.addActionListener(e -> {
             String r = historial.registrarAtencion(dni.getText().trim(), fecha.getText().trim(),
-                    diagnostico.getText().trim(), tratamiento.getText().trim());
+                    diagnostico.getText().trim(), tratamiento.getText().trim(),
+                    auth.getSesionActual().getId()); // quién atendió = personal con sesión activa
             mostrar(r);
             fecha.setText(""); diagnostico.setText(""); tratamiento.setText("");
         });
@@ -100,6 +112,7 @@ public class DashboardView extends JFrame {
                 "DNI del paciente:", dni, "Fecha de atención (yyyy-MM-dd):", fecha,
                 "Diagnóstico:", diagnostico, "Tratamiento:", tratamiento);
     }
+
     // ---------- 4. Ver historia clínica ----------
     private JPanel panelHistoriaClinica() {
         JTextField dni = new JTextField(12);
@@ -117,21 +130,8 @@ public class DashboardView extends JFrame {
         });
         return consulta("DNI del paciente:", dni, btn, salida);
     }
-        private void salir() {
-        int r = JOptionPane.showConfirmDialog(this, "¿Deseas cerrar la sesión y salir?",
-                "Salir", JOptionPane.YES_NO_OPTION);
-        if (r == JOptionPane.YES_OPTION) {
-            dispose();
-            alSalir.run();
-        }
-    }
-
-
-
-
 
     // ---------- Utilidades de UI ----------
-
     /** Formulario genérico: pares (etiqueta, campo) + botón. */
     private JPanel formulario(JButton boton, Object... elementos) {
         JPanel form = new JPanel(new GridBagLayout());
@@ -158,10 +158,6 @@ public class DashboardView extends JFrame {
         return contenedor;
     }
 
-    private void mostrar(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Resultado", JOptionPane.INFORMATION_MESSAGE);
-    
-    }
     /** Panel de consulta: campo + botón arriba, resultado abajo. */
     private JPanel consulta(String etiqueta, JTextField campo, JButton boton, JTextArea salida) {
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
@@ -186,6 +182,16 @@ public class DashboardView extends JFrame {
         return a;
     }
 
-   
-}
+    private void mostrar(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Resultado", JOptionPane.INFORMATION_MESSAGE);
+    }
 
+    private void salir() {
+        int r = JOptionPane.showConfirmDialog(this, "¿Deseas cerrar la sesión y salir?",
+                "Salir", JOptionPane.YES_NO_OPTION);
+        if (r == JOptionPane.YES_OPTION) {
+            dispose();
+            alSalir.run();
+        }
+    }
+}

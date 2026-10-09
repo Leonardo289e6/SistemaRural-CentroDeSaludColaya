@@ -49,7 +49,8 @@ public class HistorialService {
         return pacienteRepository.buscarPorDni(dni);
     }
 
-    public void registrarAtencion(String dniPaciente, String fecha, String diagnostico, String tratamiento)
+    public void registrarAtencion(String dniPaciente, String fecha, String diagnostico, String tratamiento,
+                                  Long atendidoPorId)
             throws DatoInvalidoException, ErrorPersistenciaException, PersonaNoEncontradaException {
         // Verifica primero que el paciente exista (integridad referencial
         // a nivel de aplicación, además de la FK en la base de datos).
@@ -57,7 +58,12 @@ public class HistorialService {
         ValidadorDatos.validarFecha(fecha, "fecha de atención");
         ValidadorDatos.validarTextoNoVacio(diagnostico, "diagnóstico");
         ValidadorDatos.validarTextoNoVacio(tratamiento, "tratamiento");
-        historiaClinicaRepository.registrarAtencion(new Atencion(dniPaciente, fecha, diagnostico, tratamiento));
+        if (atendidoPorId == null) {
+            throw new DatoInvalidoException("No hay un profesional de salud asociado a la atención.");
+        }
+        Atencion atencion = new Atencion(dniPaciente, fecha, diagnostico, tratamiento);
+        atencion.setAtendidoPorId(atendidoPorId);
+        historiaClinicaRepository.registrarAtencion(atencion);
     }
 
     public List<Atencion> obtenerHistoria(String dniPaciente) throws ErrorPersistenciaException {

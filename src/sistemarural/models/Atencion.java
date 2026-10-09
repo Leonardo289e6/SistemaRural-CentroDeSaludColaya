@@ -17,6 +17,8 @@ public class Atencion {
     private String fecha;
     private String diagnostico;
     private String tratamiento;
+    private Long atendidoPorId;        // personal_medico.id (columna atendido_por)
+    private String atendidoPorNombre;  // "Nombre (Rol)", solo para mostrar
 
     public Atencion(String dniPaciente, String fecha, String diagnostico, String tratamiento) {
         this.dniPaciente = dniPaciente;
@@ -49,8 +51,26 @@ public class Atencion {
         return tratamiento;
     }
 
+    public Long getAtendidoPorId() {
+        return atendidoPorId;
+    }
+
+    public void setAtendidoPorId(Long atendidoPorId) {
+        this.atendidoPorId = atendidoPorId;
+    }
+
+    public String getAtendidoPorNombre() {
+        return atendidoPorNombre;
+    }
+
+    public void setAtendidoPorNombre(String atendidoPorNombre) {
+        this.atendidoPorNombre = atendidoPorNombre;
+    }
+
     @Override
     public String toString() {
-        return fecha + " - Dx: " + diagnostico + " - Tto: " + tratamiento;
+        String atendido = (atendidoPorNombre != null) ? atendidoPorNombre : "(no registrado)";
+        return fecha + " - Dx: " + diagnostico + " - Tto: " + tratamiento
+                + " - Atendido por: " + atendido;
     }
 }
