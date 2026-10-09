@@ -3,28 +3,32 @@ package sistemarural.config;
 /**
  * DatabaseConfig
  * ----------------
- * Centraliza los datos de conexión a la base de datos, leyéndolos de
- * variables de entorno en vez de dejarlos escritos en el código fuente.
- * Esto es una RESTRICCIÓN DE DISEÑO explícita: nunca se suben
- * credenciales de base de datos al repositorio Git.
+ * Centraliza los datos de conexión a la base de datos, leyéndolos SOLO de
+ * variables de entorno. Nunca se escriben credenciales en el código fuente
+ * ni se suben al repositorio Git.
  *
- * Para conectar con Supabase, exporta antes de ejecutar el programa:
- *   export DB_HOST=db.xxxxxxxxxxxx.supabase.co
- *   export DB_PORT=5432
- *   export DB_NAME=postgres
- *   export DB_USER=postgres
- *   export DB_PASSWORD=tu_password_de_supabase
- *   export DB_SSLMODE=require
+ * Variables obligatorias (si falta alguna, el programa avisa y no conecta):
+ *   DB_HOST, DB_USER, DB_PASSWORD
  *
- * Si no defines nada, se usan valores por defecto para pruebas locales.
+ * Variables opcionales (tienen valor por defecto no sensible):
+ *   DB_PORT (6543), DB_NAME (postgres), DB_SSLMODE (require)
  */
 public final class DatabaseConfig {
 
     private DatabaseConfig() {
     }
 
+    /** Lee una variable obligatoria; si no existe, falla con un mensaje claro. */
+    private static String requerir(String nombre) {
+        String valor = System.getenv(nombre);
+        if (valor == null || valor.isBlank()) {
+            throw new IllegalStateException("Falta la variable de entorno " + nombre);
+        }
+        return valor;
+    }
+
     public static String getHost() {
-        return System.getenv().getOrDefault("DB_HOST", "aws-0-sa-east-1.pooler.supabase.com");
+        return requerir("DB_HOST");
     }
 
     public static String getPort() {
@@ -36,15 +40,15 @@ public final class DatabaseConfig {
     }
 
     public static String getUser() {
-        return System.getenv().getOrDefault("DB_USER", "postgres.sjwcuivwnogyyzdzmjev");
+        return requerir("DB_USER");
     }
 
     public static String getPassword() {
-        return System.getenv().getOrDefault("DB_PASSWORD", "P?L_.EEzR2ngmx5");
+        return requerir("DB_PASSWORD");
     }
 
     public static String getSslMode() {
-        return System.getenv().getOrDefault("DB_SSLMODE", "prefer");
+        return System.getenv().getOrDefault("DB_SSLMODE", "require");
     }
 
     /**
