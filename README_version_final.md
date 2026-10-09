@@ -376,6 +376,6 @@ Los DNI, nombres y diagnósticos son **ficticios**. Las contraseñas en texto no
 
 ## Autor
 
-Proyecto académico desarrollado por **[Tu nombre]** — Centro de Salud Rural Santa Rosa, Perú.
+Proyecto académico desarrollado por Henry Alfaro, Ariana Pardo, Andrea Puma, Daniel Alaya — Centro de Salud Rural Colaya, Perú.
    registrar atención médica, ver historia clínica.
 4. Cada acción del menú pasa por Controller → Service → Repository (JDBC) → PostgreSQL real.
