@@ -1,6 +1,6 @@
 # SistemaRural-PE
 
-Sistema de gestión de historias clínicas para el **Centro de Salud Rural Santa Rosa**. Permite al personal de salud iniciar sesión, registrar pacientes, registrar atenciones médicas y consultar la historia clínica de cada paciente, con los datos almacenados en una base de datos PostgreSQL en la nube (Supabase).
+Sistema de gestión de historias clínicas para el **Centro de Salud Rural Colaya**. Permite al personal de salud iniciar sesión, registrar pacientes, registrar atenciones médicas y consultar la historia clínica de cada paciente, con los datos almacenados en una base de datos PostgreSQL en la nube (Supabase).
 
 Aplicación de escritorio en **Java** con interfaz gráfica **Swing**, arquitectura por capas y atención a la protección de datos personales (Ley N.° 29733).
 
