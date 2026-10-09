@@ -1,6 +1,7 @@
 package sistemarural.controllers;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import sistemarural.exceptions.DatoInvalidoException;
 import sistemarural.exceptions.ErrorPersistenciaException;
@@ -25,7 +26,42 @@ public class HistorialController {
         this.historialService = historialService;
     }
 
+    /**
+     * Ejecuta una operación y muestra en consola cuánto tardó (incluye el
+     * viaje a la base de datos en la nube). Se imprime siempre, aunque la
+     * operación termine en error.
+     */
+    private <T> T medir(String operacion, Supplier<T> accion) {
+        long inicio = System.nanoTime();
+        try {
+            return accion.get();
+        } finally {
+            double ms = (System.nanoTime() - inicio) / 1_000_000.0;
+            System.out.printf("[TIEMPO] %s: %.2f ms%n", operacion, ms);
+        }
+    }
+
     public String registrarPaciente(Paciente paciente) {
+        return medir("Registrar paciente", () -> registrarPacienteInterno(paciente));
+    }
+
+    public String buscarPacientePorDni(String dni) {
+        return medir("Buscar paciente", () -> buscarPacientePorDniInterno(dni));
+    }
+
+    public String registrarAtencion(String dniPaciente, String fecha, String diagnostico, String tratamiento,
+                                    Long atendidoPorId) {
+        return medir("Registrar atención",
+                () -> registrarAtencionInterno(dniPaciente, fecha, diagnostico, tratamiento, atendidoPorId));
+    }
+
+    public List<String> verHistoriaClinica(String dniPaciente) {
+        return medir("Ver historia clínica", () -> verHistoriaClinicaInterno(dniPaciente));
+    }
+
+    // ---------- Lógica original de cada operación ----------
+
+    private String registrarPacienteInterno(Paciente paciente) {
         try {
             historialService.registrarNuevoPaciente(paciente);
             return "Paciente guardado en la base de datos: " + paciente.getNombreCompleto();
@@ -38,7 +74,7 @@ public class HistorialController {
         }
     }
 
-    public String buscarPacientePorDni(String dni) {
+    private String buscarPacientePorDniInterno(String dni) {
         try {
             Paciente paciente = historialService.buscarPaciente(dni);
             return "Paciente encontrado: " + paciente.getInformacion()
@@ -50,8 +86,8 @@ public class HistorialController {
         }
     }
 
-    public String registrarAtencion(String dniPaciente, String fecha, String diagnostico, String tratamiento,
-                                    Long atendidoPorId) {
+    private String registrarAtencionInterno(String dniPaciente, String fecha, String diagnostico,
+                                            String tratamiento, Long atendidoPorId) {
         try {
             historialService.registrarAtencion(dniPaciente, fecha, diagnostico, tratamiento, atendidoPorId);
             return "Atención registrada correctamente para el paciente " + dniPaciente;
@@ -64,7 +100,7 @@ public class HistorialController {
         }
     }
 
-    public List<String> verHistoriaClinica(String dniPaciente) {
+    private List<String> verHistoriaClinicaInterno(String dniPaciente) {
         try {
             return historialService.obtenerHistoria(dniPaciente).stream()
                     .map(Atencion::toString)
